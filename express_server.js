@@ -2,6 +2,7 @@ const express = require("express"); // Import the express library
 const app = express(); // Define our app as an instance of express
 const PORT = 8080; // default port 8080
 
+// set the view engine to ejs
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -19,9 +20,16 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// Add route /hello to send HTMl
+// Add route /hello to send send data to hello_world.ejs
 app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  const templateVars = { greeting: "Hello World!" };
+  res.render("hello_world", templateVars);
+});
+
+// Add route /urls to send data to urls_index.ejs
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
 });
 
 app.listen(PORT, () => {
