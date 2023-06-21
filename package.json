@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/shivangi0109/tinyapp/issues"
   },
-  "homepage": "https://github.com/shivangi0109/tinyapp#readme"
+  "homepage": "https://github.com/shivangi0109/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
