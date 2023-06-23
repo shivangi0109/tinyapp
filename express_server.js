@@ -90,6 +90,17 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 });
 
+// POST route to update a URL resource: POST /urls/:id
+app.post('/urls/:id', (req, res) => {
+  const urlId = req.params.id; // Get the URL ID from the route parameter
+  const newLongURL = req.body.longURL; // Get the updated long URL from req.body
+
+  // Update the stored long URL with the new value
+  urlDatabase[urlId] = newLongURL;
+
+  res.redirect('/urls'); // Redirect the client back to /urls
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
