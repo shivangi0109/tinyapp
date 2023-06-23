@@ -5,6 +5,13 @@ const PORT = 8080; // default port 8080
 // set the view engine to ejs
 app.set("view engine", "ejs");
 
+/***
+ * When our browser submits a POST request, the data in the request body is sent as a Buffer. 
+ * While this data type is great for transmitting data, it's not readable for us humans. 
+ * To make this data readable, we will need to use another piece of middleware which will translate, or parse the body.
+ */
+app.use(express.urlencoded({ extended: true }));
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
