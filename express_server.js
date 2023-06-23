@@ -31,7 +31,7 @@ function generateRandomString() {
   return result;
 }
 
-console.log(generateRandomString());
+// console.log(generateRandomString());
 
 // Add root route /
 app.get("/", (req, res) => {
@@ -78,9 +78,16 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL; // Save the id-longURL pair to the urlDatabase
-  console.log(req.body); // Log the POST request body to the console
-  console.log(urlDatabase); // Log the updated urlDatabase to the console
+  // console.log(req.body); // Log the POST request body to the console
+  // console.log(urlDatabase); // Log the updated urlDatabase to the console
   res.redirect(`/urls/${shortURL}`); // Redirect to the new short URL's show page
+});
+
+// Add a POST route that removes a URL resource: POST /urls/:id/delete
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+  delete urlDatabase[id];
+  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
