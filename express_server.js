@@ -17,6 +17,22 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// Implement the function to generate a random short URL ID
+function generateRandomString() {
+  const length = 6;
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
+console.log(generateRandomString());
+
 // Add root route /
 app.get("/", (req, res) => {
   res.send("Hello!");
