@@ -66,6 +66,13 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Redirect any request to "/u/:id" to its longURL
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
+});
+
 //  Add a POST route to receive the Form Submission
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
