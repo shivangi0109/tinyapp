@@ -66,9 +66,14 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+//  Add a POST route to receive the Form Submission
 app.post("/urls", (req, res) => {
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL; // Save the id-longURL pair to the urlDatabase
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  console.log(urlDatabase); // Log the updated urlDatabase to the console
+  res.redirect(`/urls/${shortURL}`); // Redirect to the new short URL's show page
 });
 
 app.listen(PORT, () => {
