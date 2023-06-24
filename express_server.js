@@ -8,8 +8,8 @@ const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
 /***
- * When our browser submits a POST request, the data in the request body is sent as a Buffer. 
- * While this data type is great for transmitting data, it's not readable for us humans. 
+ * When our browser submits a POST request, the data in the request body is sent as a Buffer.
+ * While this data type is great for transmitting data, it's not readable for us humans.
  * To make this data readable, we will need to use another piece of middleware which will translate, or parse the body.
  */
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +22,7 @@ const urlDatabase = {
 };
 
 // Implement the function to generate a random short URL ID
-function generateRandomString() {
+const generateRandomString = function() {
   const length = 6;
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -33,7 +33,7 @@ function generateRandomString() {
   }
 
   return result;
-}
+};
 
 // console.log(generateRandomString());
 
@@ -57,7 +57,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     username: req.cookies.username,
-    urls: urlDatabase 
+    urls: urlDatabase
   };
   res.render("urls_index", templateVars);
 });
