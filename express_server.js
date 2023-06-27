@@ -35,6 +35,19 @@ const generateRandomString = function() {
   return result;
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 // console.log(generateRandomString());
 
 // Add root route /
@@ -55,8 +68,12 @@ app.get("/hello", (req, res) => {
 
 // Add route /urls to send data to urls_index.ejs
 app.get("/urls", (req, res) => {
+  const userId = req.cookies.user_id;
+  const user = users[userId];
+
   const templateVars = {
-    username: req.cookies.username,
+    // username: req.cookies.username,
+    user: user,
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -64,13 +81,27 @@ app.get("/urls", (req, res) => {
 
 // Add route /urls/new to send data to urls_new.ejs
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies.username };
+  const userId = req.cookies.user_id;
+  const user = users[userId];
+
+  const templateVars = {
+    // username: req.cookies.username
+    user: user,
+  };
   res.render("urls_new", templateVars);
 });
 
 // Add route /urls/:id to send data to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { username: req.cookies.username, id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const userId = req.cookies.user_id;
+  const user = users[userId];
+
+  const templateVars = {
+    // username: req.cookies.username,
+    user: user,
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id]
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -129,6 +160,29 @@ app.post('/logout', (req, res) => {
   res.clearCookie('username');
   res.redirect('/urls');
 });
+
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password; // Generate a random user ID
+
+  const userId = generateRandomString(); // Generate a random user ID
+
+  // Create a new user object
+  const newUser = {
+    id: userId,
+    email,
+    password
+  };
+
+  // Add the user to the global users object
+  users[userId] = newUser;
+
+  // Set the user_id cookie containing the user's ID
+  res.cookie('user_id', userId);
+
+  // Redirect the user to the /urls page
+  res.redirect('/urls');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
