@@ -81,6 +81,11 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+// Add route /register to send data to register.ejs
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
 //  Add a POST route to receive the Form Submission
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
