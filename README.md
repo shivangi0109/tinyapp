@@ -17,7 +17,7 @@ We also installed Nodemon. s a utility that will monitor for any changes in our 
 ## Getting Started
 
 - Run the TinyApp project using the `node express_server.js` command.
-- If Nodemon is installed, run the application with the following command 
+- If Nodemon is installed, run the application with the following command
   - ./node_modules/.bin/nodemon -L express_server.js
   OR
   - Edit the scripts section of package.json to look like the following
