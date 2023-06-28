@@ -21,6 +21,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 // Implement the function to generate a random short URL ID
 const generateRandomString = function() {
   const length = 6;
@@ -35,17 +48,14 @@ const generateRandomString = function() {
   return result;
 };
 
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
+// Helper function to find a user by email
+const getUserByEmail = function (email) {
+  for (const userId in users) {
+    if (users[userId].email === email) {
+      return users[userId];
+    }
+  }
+  return null;
 };
 
 // console.log(generateRandomString());
@@ -161,9 +171,22 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 });
 
+// Add a POST route to /register endpoint to add a new user object to the global users object
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password; // Generate a random user ID
+
+  // Error condition: Empty email or password
+  if (!email || !password) {
+    res.status(400).send('Email and password cannot be empty');
+    return;
+  }
+
+  // Error condition: Email already exists
+  if (getUserByEmail(email)) {
+    res.status(400).send('Email already exists');
+    return;
+  }
 
   const userId = generateRandomString(); // Generate a random user ID
 
