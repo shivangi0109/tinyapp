@@ -93,10 +93,15 @@ app.get("/urls/new", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
 
-  const templateVars = {
-    user: user,
-  };
-  res.render("urls_new", templateVars);
+  if (!user) {
+    // User is not logged in, redirect to /login
+    res.redirect("/login");
+  } else {
+    const templateVars = {
+      user: user,
+    };
+    res.render("urls_new", templateVars);
+  }
 });
 
 // Add route /urls/:id to send data to urls_show.ejs
@@ -162,8 +167,16 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL; // Save the id-longURL pair to the urlDatabase
-  // console.log(req.body); // Log the POST request body to the console
-  // console.log(urlDatabase); // Log the updated urlDatabase to the console
+  
+  const userId = req.cookies.user_id;
+  const user = users[userId];
+
+  if (!user) {
+    // User is not logged in, respond with an HTML message
+    res.status(401).send("You need to be logged in to create new URLs.");
+    return;
+  }
+
   res.redirect(`/urls/${shortURL}`); // Redirect to the new short URL's show page
 });
 
