@@ -127,6 +127,11 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
+// Add route /login to send data to login.ejs
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
 //  Add a POST route to receive the Form Submission
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
@@ -156,14 +161,14 @@ app.post('/urls/:id', (req, res) => {
 });
 
 // Add a POST route to /login to set the values on the cookie
-app.post('/login', (req, res) => {
-  const username = req.body.username;
+// app.post('/login', (req, res) => {
+//   const username = req.body.username;
 
-  // Set the username cookie
-  res.cookie('username', username);
+//   // Set the username cookie
+//   res.cookie('username', username);
 
-  res.redirect('/urls'); // Redirect the browser back to the /urls page
-});
+//   res.redirect('/urls'); // Redirect the browser back to the /urls page
+// });
 
 // Add a POST route to /logout endpoint so that it clears the username cookie
 app.post('/logout', (req, res) => {
@@ -174,7 +179,7 @@ app.post('/logout', (req, res) => {
 // Add a POST route to /register endpoint to add a new user object to the global users object
 app.post("/register", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password; // Generate a random user ID
+  const password = req.body.password;
 
   // Error condition: Empty email or password
   if (!email || !password) {
@@ -205,6 +210,36 @@ app.post("/register", (req, res) => {
 
   // Redirect the user to the /urls page
   res.redirect('/urls');
+})
+
+// Add a POST route to /login endpoint
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  let user;
+
+  for (const userId in users) {
+    if (users[userId].email === email) {
+      user = users[userId];
+    }
+  }
+
+  if (!user) {
+    // what if there is no users??
+    res.status(404).send("This user doesn't exist");
+    return;
+  }
+
+  if (user.password !== password) {
+    // verify password
+    res.status(401).send("Incorrect password");
+    return;
+  }
+  
+  // Set the user_id cookie containing the user's ID
+  res.cookie('user_id', user.id);
+  res.redirect('/urls'); 
 })
 
 app.listen(PORT, () => {
