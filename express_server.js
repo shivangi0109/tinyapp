@@ -121,7 +121,13 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL];
-  res.redirect(longURL);
+
+  if (!longURL) {
+    // Short URL does not exist, send an error message
+    res.status(404).send("This shortened URL does not exist.");
+  } else {
+    res.redirect(longURL);
+  }
 });
 
 // Add route /register to send data to register.ejs
@@ -167,7 +173,7 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL; // Save the id-longURL pair to the urlDatabase
-  
+
   const userId = req.cookies.user_id;
   const user = users[userId];
 
