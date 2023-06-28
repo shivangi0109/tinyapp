@@ -82,7 +82,6 @@ app.get("/urls", (req, res) => {
   const user = users[userId];
 
   const templateVars = {
-    // username: req.cookies.username,
     user: user,
     urls: urlDatabase
   };
@@ -95,7 +94,6 @@ app.get("/urls/new", (req, res) => {
   const user = users[userId];
 
   const templateVars = {
-    // username: req.cookies.username
     user: user,
   };
   res.render("urls_new", templateVars);
@@ -107,7 +105,6 @@ app.get("/urls/:id", (req, res) => {
   const user = users[userId];
 
   const templateVars = {
-    // username: req.cookies.username,
     user: user,
     id: req.params.id,
     longURL: urlDatabase[req.params.id]
@@ -124,12 +121,26 @@ app.get("/u/:id", (req, res) => {
 
 // Add route /register to send data to register.ejs
 app.get('/register', (req, res) => {
-  res.render('register');
+  const userId = req.cookies.user_id;
+  const user = users[userId];
+
+  const templateVars = {
+    user: user
+  }
+
+  res.render('register', templateVars);
 });
 
 // Add route /login to send data to login.ejs
 app.get('/login', (req, res) => {
-  res.render('login');
+  const userId = req.cookies.user_id;
+  const user = users[userId];
+  
+  const templateVars = {
+    user: user
+  }
+
+  res.render('login', templateVars);
 });
 
 //  Add a POST route to receive the Form Submission
@@ -158,22 +169,6 @@ app.post('/urls/:id', (req, res) => {
   urlDatabase[urlId] = newLongURL;
 
   res.redirect('/urls'); // Redirect the client back to /urls
-});
-
-// Add a POST route to /login to set the values on the cookie
-// app.post('/login', (req, res) => {
-//   const username = req.body.username;
-
-//   // Set the username cookie
-//   res.cookie('username', username);
-
-//   res.redirect('/urls'); // Redirect the browser back to the /urls page
-// });
-
-// Add a POST route to /logout endpoint so that it clears the username cookie
-app.post('/logout', (req, res) => {
-  res.clearCookie('username');
-  res.redirect('/urls');
 });
 
 // Add a POST route to /register endpoint to add a new user object to the global users object
@@ -217,23 +212,17 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  let user;
-
-  for (const userId in users) {
-    if (users[userId].email === email) {
-      user = users[userId];
-    }
-  }
+  let user = getUserByEmail(email);
 
   if (!user) {
     // what if there is no users??
-    res.status(404).send("This user doesn't exist");
+    res.status(403).send("User with that email address not found");
     return;
   }
 
   if (user.password !== password) {
     // verify password
-    res.status(401).send("Incorrect password");
+    res.status(403).send("Incorrect password");
     return;
   }
   
@@ -241,6 +230,12 @@ app.post("/login", (req, res) => {
   res.cookie('user_id', user.id);
   res.redirect('/urls'); 
 })
+
+// Add a POST route to /logout endpoint so that it clears the user_id cookie
+app.post('/logout', (req, res) => {
+  res.clearCookie('user_id');
+  res.redirect('/login');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

@@ -13,16 +13,18 @@
     <title>Register - TinyApp</title>
   </head>
   <body>
+    <%- include('partials/_header', { user: user }) %>
+    
     <div class="container">
-      <h2 class="text-center">Register</h2>
+      <h2 class="mt-2">Create account</h2>
       <form action="/register" method="POST">
         <div class="mb-3">
-          <label for="email" class="form-label">Email:</label>
-          <input type="email" class="form-control" placeholder="Enter Email" name="email" aria-describedby="emailHelp">
+          <label for="email" class="form-label">Email address:</label>
+          <input type="email" class="form-control" style="width: 300px" placeholder="Enter Email" name="email" aria-describedby="emailHelp">
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password:</label>
-          <input type="password" class="form-control" placeholder="Enter Password" name="password">
+          <input type="password" class="form-control" style="width: 300px" placeholder="Enter Password" name="password">
         </div>
         <button type="submit" class="btn btn-primary">Register</button>
       </form>
