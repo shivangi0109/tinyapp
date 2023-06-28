@@ -128,6 +128,14 @@ app.get('/register', (req, res) => {
     user: user
   };
 
+  if (user) {
+    // User is already logged in, redirect to /urls
+    res.redirect('/urls');
+  } else {
+    // User is not logged in, render the registration form
+    res.render('register', templateVars);
+  }
+
   res.render('register', templateVars);
 });
 
@@ -140,7 +148,13 @@ app.get('/login', (req, res) => {
     user: user
   };
 
-  res.render('login', templateVars);
+  if (user) {
+    // User is already logged in, redirect to /urls
+    res.redirect('/urls');
+  } else {
+    // User is not logged in, render the login form
+    res.render('login', templateVars);
+  }
 });
 
 //  Add a POST route to receive the Form Submission
