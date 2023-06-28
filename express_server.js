@@ -49,7 +49,7 @@ const generateRandomString = function() {
 };
 
 // Helper function to find a user by email
-const getUserByEmail = function (email) {
+const getUserByEmail = function(email) {
   for (const userId in users) {
     if (users[userId].email === email) {
       return users[userId];
@@ -126,7 +126,7 @@ app.get('/register', (req, res) => {
 
   const templateVars = {
     user: user
-  }
+  };
 
   res.render('register', templateVars);
 });
@@ -138,7 +138,7 @@ app.get('/login', (req, res) => {
   
   const templateVars = {
     user: user
-  }
+  };
 
   res.render('login', templateVars);
 });
@@ -205,7 +205,7 @@ app.post("/register", (req, res) => {
 
   // Redirect the user to the /urls page
   res.redirect('/urls');
-})
+});
 
 // Add a POST route to /login endpoint
 app.post("/login", (req, res) => {
@@ -228,8 +228,8 @@ app.post("/login", (req, res) => {
   
   // Set the user_id cookie containing the user's ID
   res.cookie('user_id', user.id);
-  res.redirect('/urls'); 
-})
+  res.redirect('/urls');
+});
 
 // Add a POST route to /logout endpoint so that it clears the user_id cookie
 app.post('/logout', (req, res) => {
