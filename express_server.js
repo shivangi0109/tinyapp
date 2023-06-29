@@ -16,9 +16,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -58,6 +69,17 @@ const getUserByEmail = function(email) {
   return null;
 };
 
+// Helper function which returns the URLs where the userID is equal to the id of the currently logged-in user
+const urlsForUser = (id) => {
+  const userUrls = {};
+  for (const urlId in urlDatabase) {
+    if (urlDatabase[urlId].userID === id) {
+      userUrls[urlId] = urlDatabase[urlId];
+    }
+  }
+  return userUrls;
+};
+
 // console.log(generateRandomString());
 
 // Add root route /
@@ -81,9 +103,24 @@ app.get("/urls", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
 
+  // console.log(users);
+  // console.log(userId);
+  // console.log(user);
+
+  if (!user) {
+    const templateVars = {
+      user: null,
+      urls: null
+    };
+    res.render("urls_index", templateVars);
+    return;
+  }
+
+  const userUrls = urlsForUser(userId);
+
   const templateVars = {
     user: user,
-    urls: urlDatabase
+    urls: userUrls
   };
   res.render("urls_index", templateVars);
 });
@@ -96,23 +133,45 @@ app.get("/urls/new", (req, res) => {
   if (!user) {
     // User is not logged in, redirect to /login
     res.redirect("/login");
-  } else {
-    const templateVars = {
-      user: user,
-    };
-    res.render("urls_new", templateVars);
+    return;
   }
-});
+
+  const templateVars = {
+    user: user,
+  };
+
+  res.render("urls_new", templateVars);
+  });
 
 // Add route /urls/:id to send data to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
 
+  const urlId = req.params.id;
+  const url = urlDatabase[urlId];
+
+  if (!user) {
+    const templateVars = {
+      user: null,
+    };
+    res.render("urls_show", templateVars);
+    return;
+  }
+
+  if (!url || url.userID !== userId) {
+    const templateVars = {
+      user: user,
+    };
+
+    res.render("urls_show", templateVars);
+    return;
+  }
+
   const templateVars = {
     user: user,
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    id: urlId,
+    longURL: url.longURL
   };
   res.render("urls_show", templateVars);
 });
@@ -120,7 +179,7 @@ app.get("/urls/:id", (req, res) => {
 // Redirect any request to "/u/:id" to its longURL
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
 
   if (!longURL) {
     // Short URL does not exist, send an error message
@@ -142,11 +201,10 @@ app.get('/register', (req, res) => {
   if (user) {
     // User is already logged in, redirect to /urls
     res.redirect('/urls');
-  } else {
-    // User is not logged in, render the registration form
-    res.render('register', templateVars);
+    return;
   }
 
+  // User is not logged in, render the registration form
   res.render('register', templateVars);
 });
 
@@ -162,18 +220,14 @@ app.get('/login', (req, res) => {
   if (user) {
     // User is already logged in, redirect to /urls
     res.redirect('/urls');
-  } else {
-    // User is not logged in, render the login form
-    res.render('login', templateVars);
+    return;
   }
+  // User is not logged in, render the login form
+  res.render('login', templateVars);
 });
 
 //  Add a POST route to receive the Form Submission
 app.post("/urls", (req, res) => {
-  const longURL = req.body.longURL;
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL; // Save the id-longURL pair to the urlDatabase
-
   const userId = req.cookies.user_id;
   const user = users[userId];
 
@@ -183,31 +237,75 @@ app.post("/urls", (req, res) => {
     return;
   }
 
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userId
+  };
+
   res.redirect(`/urls/${shortURL}`); // Redirect to the new short URL's show page
 });
 
 // Add a POST route that removes a URL resource: POST /urls/:id/delete
 app.post("/urls/:id/delete", (req, res) => {
-  const id = req.params.id;
-  delete urlDatabase[id];
+  const urlId = req.params.id;  // Get the URL ID from the route parameter
+  const userId = req.cookies.user_id;
+  const url = urlDatabase[urlId];
+
+  if (!url) {
+    res.status(404).send("This URL does not exist.");
+    return;
+  }
+
+  if (!userId) {
+    res.status(401).send("You must be logged in to delete this URL");
+    return;
+  }
+
+  if (url.userID !== userId) {
+    res.status(403).send("You do not have permission to delete this URL.");
+    return;
+  }
+
+  delete urlDatabase[urlId];
   res.redirect('/urls');
 });
 
 // POST route to update a URL resource: POST /urls/:id
 app.post('/urls/:id', (req, res) => {
   const urlId = req.params.id; // Get the URL ID from the route parameter
+  const userId = req.cookies.user_id;
+  const url = urlDatabase[urlId];
+
+  if (!url) {
+    res.status(404).send("This URL does not exist.");
+    return;
+  }
+
+  if (!userId) {
+    res.status(401).send("You must be logged in to edit this URL");
+    return;
+  }
+
+  if (url.userID !== userId) {
+    res.status(403).send("You do not have permission to edit this URL.");
+    return;
+  }
+
   const newLongURL = req.body.longURL; // Get the updated long URL from req.body
 
   // Update the stored long URL with the new value
-  urlDatabase[urlId] = newLongURL;
+  url.longURL = newLongURL;
 
   res.redirect('/urls'); // Redirect the client back to /urls
 });
 
 // Add a POST route to /register endpoint to add a new user object to the global users object
 app.post("/register", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const email = req.body.email; // Get the updated email from req.body
+  const password = req.body.password; // Get the updated password from req.body
 
   // Error condition: Empty email or password
   if (!email || !password) {

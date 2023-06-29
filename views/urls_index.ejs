@@ -19,33 +19,40 @@
   <body>
     <%- include('partials/_header', { user: user }) %>
     <main style="margin: 1em;">
-      <h3>My URLs</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Short URL ID</th>
-            <th scope="col">Long URL</th>
-            <th scope="col">Edit</th> <!-- Add Edit column -->
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for (let id in urls) { %>
+      <% if (!user) { %>
+        <div class="alert alert-danger" role="alert">
+          Please log in or register to view your URLs.
+        </div>
+      <% } else { %>
+        <h3>My URLs</h3>
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= id %></td>
-              <td><%= urls[id] %></td>
-              <td>
-                <a href="/urls/<%= id %>">Edit</a> <!-- Edit link -->
-              </td>
-              <td>
-                <form method="POST" action="/urls/<%= id %>/delete">
-                  <button type="Submit" class="btn btn-outline-danger">Delete</button>
-                </form>
-              </td>
+              <th scope="col">Short URL ID</th>
+              <th scope="col">Long URL</th>
+              <th scope="col">Edit</th> <!-- Add Edit column -->
+              <th scope="col">Delete</th>
             </tr>
-          <% } %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% for (const urlId in urls) { %>
+              <% const url = urls[urlId]; %>
+              <tr>
+                <td><%= urlId %></td>
+                <td><%= url.longURL %></td>
+                <td>
+                  <a href="/urls/<%= urlId %>">Edit</a> <!-- Edit link -->
+                </td>
+                <td>
+                  <form method="POST" action="/urls/<%= urlId %>/delete">
+                    <button type="Submit" class="btn btn-outline-danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script
