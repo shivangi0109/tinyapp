@@ -64,21 +64,21 @@ const generateRandomString = function() {
 };
 
 // Helper function to find a user by email
-const getUserByEmail = function(email) {
-  for (const userId in users) {
-    if (users[userId].email === email) {
-      return users[userId];
+const getUserByEmail = function(email, database) {
+  for (const userId in database) {
+    if (database[userId].email === email) {
+      return database[userId];
     }
   }
   return null;
 };
 
 // Helper function which returns the URLs where the userID is equal to the id of the currently logged-in user
-const urlsForUser = (id) => {
+const urlsForUser = (id, database) => {
   const userUrls = {};
-  for (const urlId in urlDatabase) {
-    if (urlDatabase[urlId].userID === id) {
-      userUrls[urlId] = urlDatabase[urlId];
+  for (const urlId in database) {
+    if (database[urlId].userID === id) {
+      userUrls[urlId] = database[urlId];
     }
   }
   return userUrls;
@@ -114,7 +114,7 @@ app.get("/urls", (req, res) => {
     return;
   }
 
-  const userUrls = urlsForUser(userId);
+  const userUrls = urlsForUser(userId, urlDatabase);
 
   const templateVars = {
     user: user,
@@ -312,7 +312,7 @@ app.post("/register", (req, res) => {
   }
 
   // Error condition: Email already exists
-  if (getUserByEmail(email)) {
+  if (getUserByEmail(email, users)) {
     res.status(400).send('Email already exists');
     return;
   }
@@ -344,7 +344,7 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  let user = getUserByEmail(email);
+  let user = getUserByEmail(email, users);
 
   if (!user) {
     // what if there is no users??
