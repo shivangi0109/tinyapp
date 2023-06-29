@@ -2,6 +2,7 @@ const express = require("express"); // Import the express library
 // const cookieParser = require("cookie-parser"); // Import the cookie-parser library
 const bcrypt = require("bcryptjs"); // Import the bcryptjs library
 var cookieSession = require('cookie-session') // Import the cookie-session library
+const { getUserByEmail, urlsForUser } = require('./helpers');
 
 const app = express(); // Define our app as an instance of express
 const PORT = 8080; // default port 8080
@@ -61,27 +62,6 @@ const generateRandomString = function() {
   }
 
   return result;
-};
-
-// Helper function to find a user by email
-const getUserByEmail = function(email, database) {
-  for (const userId in database) {
-    if (database[userId].email === email) {
-      return database[userId];
-    }
-  }
-  return null;
-};
-
-// Helper function which returns the URLs where the userID is equal to the id of the currently logged-in user
-const urlsForUser = (id, database) => {
-  const userUrls = {};
-  for (const urlId in database) {
-    if (database[urlId].userID === id) {
-      userUrls[urlId] = database[urlId];
-    }
-  }
-  return userUrls;
 };
 
 // Add root route /
