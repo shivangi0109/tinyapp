@@ -324,7 +324,6 @@ app.post("/register", (req, res) => {
 
   // Hash the password
   const hashedPassword = bcrypt.hashSync(password, 10);
-  console.log(hashedPassword);
 
   // Create a new user object
   const newUser = {
@@ -332,11 +331,9 @@ app.post("/register", (req, res) => {
     email,
     password: hashedPassword, // Save the hashed password
   };
-  console.log(newUser);
 
   // Add the user to the global users object
   users[userId] = newUser;
-  console.log(users);
 
   // Set the user_id cookie containing the user's ID
   res.cookie('user_id', userId);
@@ -358,10 +355,9 @@ app.post("/login", (req, res) => {
     return;
   }
 
-  if (user.password !== password) {
-    // verify password
-    res.status(403).send("Incorrect password");
-    return;
+  // Check if the password is correct
+  if (!bcrypt.compareSync(password, user.password)) {
+    return res.status(403).send("Incorrect password");
   }
   
   // Set the user_id cookie containing the user's ID
