@@ -1,5 +1,6 @@
 const express = require("express"); // Import the express library
 const cookieParser = require("cookie-parser"); // Import the cookie-parser library
+const bcrypt = require("bcryptjs"); // Import the bcryptjs library
 
 const app = express(); // Define our app as an instance of express
 const PORT = 8080; // default port 8080
@@ -321,15 +322,21 @@ app.post("/register", (req, res) => {
 
   const userId = generateRandomString(); // Generate a random user ID
 
+  // Hash the password
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  console.log(hashedPassword);
+
   // Create a new user object
   const newUser = {
     id: userId,
     email,
-    password
+    password: hashedPassword, // Save the hashed password
   };
+  console.log(newUser);
 
   // Add the user to the global users object
   users[userId] = newUser;
+  console.log(users);
 
   // Set the user_id cookie containing the user's ID
   res.cookie('user_id', userId);
