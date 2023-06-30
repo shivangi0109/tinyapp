@@ -7,8 +7,11 @@ https://www.lighthouselabs.ca → http://goo.gl/6alQXu
 In order to create a service that shortens URLs we will need to apply the concepts such as HTTP redirection and APIs.
 
 ## Final Product
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["Screenshot of register page"](https://github.com/shivangi0109/tinyapp/blob/master/docs/register-page.png)
+!["Screenshot of login page"](https://github.com/shivangi0109/tinyapp/blob/master/docs/login-page.png)
+!["Screenshot of create new url page"](https://github.com/shivangi0109/tinyapp/blob/master/docs/create-new-url-page.png)
+!["Screenshot of edit url page"](https://github.com/shivangi0109/tinyapp/blob/master/docs/edit-url-page.png)
+!["Screenshot of URLs page"](https://github.com/shivangi0109/tinyapp/blob/master/docs/urls-page.png)
 
 ## Dependencies
 
