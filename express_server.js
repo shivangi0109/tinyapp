@@ -60,9 +60,14 @@ const generateRandomString = function() {
   return result;
 };
 
-// Add root route /
+// Add root route /, redirect users to /urls if logged in, and to /login if not
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userId = req.session.userId;
+  if (userId) {
+    return res.redirect('/urls');
+  } else {
+    return res.redirect('/login');
+  }
 });
 
 // Add route /urls.json to see a JSON string
@@ -126,20 +131,11 @@ app.get("/urls/:id", (req, res) => {
   const url = urlDatabase[urlId];
 
   if (!user) {
-    const templateVars = {
-      user: null,
-    };
-    res.render("urls_show", templateVars);
-    return;
+    return res.status(401).send("Unauthorized. Please log in or register.");
   }
 
   if (!url || url.userID !== userId) {
-    const templateVars = {
-      user: user,
-    };
-
-    res.render("urls_show", templateVars);
-    return;
+    return res.status(403).send("You don't have permission to access this URL.");
   }
 
   const templateVars = {
@@ -153,14 +149,14 @@ app.get("/urls/:id", (req, res) => {
 // Redirect any request to "/u/:id" to its longURL
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL].longURL;
+  const url = urlDatabase[shortURL];
 
-  if (!longURL) {
-    // Short URL does not exist, send an error message
-    res.status(404).send("This shortened URL does not exist.");
-  } else {
-    res.redirect(longURL);
+  if (!url) {
+    return res.status(404).send("This shortened URL does not exist.");
   }
+
+  const longURL = url.longURL;
+  res.redirect(longURL);
 });
 
 // Add route /register to send data to register.ejs
@@ -342,7 +338,7 @@ app.post("/login", (req, res) => {
 // Add a POST route to /logout endpoint so that it clears the userId cookieSession
 app.post('/logout', (req, res) => {
   // Clear the user ID from the session to log out the user
-  req.session.userId = null;
+  req.session = null;
 
   res.redirect('/login');
 });
