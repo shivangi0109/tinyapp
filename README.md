@@ -17,13 +17,13 @@ In order to create a service that shortens URLs we will need to apply the concep
 
 Additionally, We will use the specific technologies to illustrate these concepts:
 
-Web Server: Node.js
-Middleware: Express
-Template Engine: EJS
-Store passwords securely: bcryptjs
-Use cookies securely(Middleware): cookie-session
+- Web Server: Node.js
+- Middleware: Express
+- Template Engine: EJS
+- Store passwords securely: bcryptjs
+- Use cookies securely(Middleware): cookie-session
 
-We also installed Nodemon. s a utility that will monitor for any changes in our source code and automatically restart our server. Perfect for development.
+- We also installed Nodemon as dev dependencies. s a utility that will monitor for any changes in our source code and automatically restart our server. Perfect for development.
 
 ## Getting Started
 
