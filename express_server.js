@@ -1,16 +1,10 @@
 const express = require("express"); // Import the express library
-// const cookieParser = require("cookie-parser"); // Import the cookie-parser library
 const bcrypt = require("bcryptjs"); // Import the bcryptjs library
-var cookieSession = require('cookie-session') // Import the cookie-session library
+const cookieSession = require('cookie-session'); // Import the cookie-session library
 const { getUserByEmail, urlsForUser } = require('./helpers');
 
 const app = express(); // Define our app as an instance of express
 const PORT = 8080; // default port 8080
-const cookieSessionConfig = cookieSession({
-  name: 'myCookieSession',
-  keys: ['my-secret-word'],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-})
 
 // set the view engine to ejs
 app.set("view engine", "ejs");
@@ -22,9 +16,11 @@ app.set("view engine", "ejs");
  */
 app.use(express.urlencoded({ extended: true }));
 
-// app.use(cookieParser());
-
-app.use(cookieSessionConfig);
+app.use(cookieSession({
+  name: 'myCookieSession',
+  keys: ['my-secret-word'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 
 const urlDatabase = {
   b6UTxQ: {
@@ -82,7 +78,7 @@ app.get("/hello", (req, res) => {
 
 // Add route /urls to send data to urls_index.ejs
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const user = users[userId];
 
   if (!user) {
@@ -105,7 +101,7 @@ app.get("/urls", (req, res) => {
 
 // Add route /urls/new to send data to urls_new.ejs
 app.get("/urls/new", (req, res) => {
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const user = users[userId];
 
   if (!user) {
@@ -119,11 +115,11 @@ app.get("/urls/new", (req, res) => {
   };
 
   res.render("urls_new", templateVars);
-  });
+});
 
 // Add route /urls/:id to send data to urls_show.ejs
 app.get("/urls/:id", (req, res) => {
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const user = users[userId];
 
   const urlId = req.params.id;
@@ -169,7 +165,7 @@ app.get("/u/:id", (req, res) => {
 
 // Add route /register to send data to register.ejs
 app.get('/register', (req, res) => {
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const user = users[userId];
 
   const templateVars = {
@@ -188,7 +184,7 @@ app.get('/register', (req, res) => {
 
 // Add route /login to send data to login.ejs
 app.get('/login', (req, res) => {
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const user = users[userId];
   
   const templateVars = {
@@ -206,7 +202,7 @@ app.get('/login', (req, res) => {
 
 //  Add a POST route to receive the Form Submission
 app.post("/urls", (req, res) => {
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const user = users[userId];
 
   if (!user) {
@@ -229,7 +225,7 @@ app.post("/urls", (req, res) => {
 // Add a POST route that removes a URL resource: POST /urls/:id/delete
 app.post("/urls/:id/delete", (req, res) => {
   const urlId = req.params.id;  // Get the URL ID from the route parameter
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const url = urlDatabase[urlId];
 
   if (!url) {
@@ -254,7 +250,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // POST route to update a URL resource: POST /urls/:id
 app.post('/urls/:id', (req, res) => {
   const urlId = req.params.id; // Get the URL ID from the route parameter
-  const userId = req.session.user_id;  // Retrieve the user ID from the session
+  const userId = req.session.userId;  // Retrieve the user ID from the session
   const url = urlDatabase[urlId];
 
   if (!url) {
@@ -312,8 +308,8 @@ app.post("/register", (req, res) => {
   // Add the user to the global users object
   users[userId] = newUser;
 
-  // Set the user_id containing the user's ID in the session
-  req.session.user_id = newUser.id;
+  // Set the userId containing the user's ID in the session
+  req.session.userId = newUser.id;
 
   // Redirect the user to the /urls page
   res.redirect('/urls');
@@ -337,16 +333,16 @@ app.post("/login", (req, res) => {
     return res.status(403).send("Incorrect password");
   }
   
-  // Set the user_id containing the user's ID in the session
-  req.session.user_id = user.id;
+  // Set the userId containing the user's ID in the session
+  req.session.userId = user.id;
 
   res.redirect('/urls');
 });
 
-// Add a POST route to /logout endpoint so that it clears the user_id cookieSession
+// Add a POST route to /logout endpoint so that it clears the userId cookieSession
 app.post('/logout', (req, res) => {
   // Clear the user ID from the session to log out the user
-  req.session.user_id = null;
+  req.session.userId = null;
 
   res.redirect('/login');
 });
